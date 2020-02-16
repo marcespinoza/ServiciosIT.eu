@@ -55,8 +55,10 @@ public class MainModel implements MainInterface.MainModel {
             public void onResponse(Call call, Response response) throws IOException {
 
                 String mMessage = response.body().string();
-                String sub = StringUtils.substringBefore(mMessage, "<");
-                mPresenter.returnUrl(sub);
+                String url = StringUtils.substringBefore(mMessage, "<");
+                String sub = StringUtils.substringBetween(mMessage,">","<" );
+                String title = StringUtils.substringAfterLast(mMessage, ">");
+                mPresenter.returnUrl(title);
                 Log.i("String",""+mMessage);
             }
         });
