@@ -2,10 +2,13 @@ package A01.serviciosIT.eu.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Bundle;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.TextView;
-import android.widget.Toolbar;
+import android.widget.Toast;
 
 import com.google.android.material.appbar.MaterialToolbar;
 
@@ -22,12 +25,25 @@ public class MainActivity extends AppCompatActivity implements MainInterface.Mai
     PassPopup passPopup = null;
     MaterialToolbar materialToolbar;
     TextView titletoolbar;
+    @BindView(R.id.webview)
+    WebView webView;
+    @BindView(R.id.swiperefreshlayout)
+    SwipeRefreshLayout swipeRefreshLayout;
+    String url = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        webView.setWebViewClient(new WebViewClient());
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                webView.loadUrl(url);
+
+            }
+        });
         materialToolbar = findViewById(R.id.toolbar);
         titletoolbar = (TextView) materialToolbar.findViewById(R.id.toolbar_title);
         mPresenter = new MainPresenter(this);
@@ -42,7 +58,21 @@ public class MainActivity extends AppCompatActivity implements MainInterface.Mai
 
     @Override
     public void clickedAccept(String s) {
+        passPopup.dismiss();
+        swipeRefreshLayout.post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                swipeRefreshLayout.setRefreshing(true);
+            }
+        });
         mPresenter.password(s);
+    }
+
+    @Override
+    public void clickedCancel() {
+        finish();
     }
 
     @Override
@@ -50,14 +80,26 @@ public class MainActivity extends AppCompatActivity implements MainInterface.Mai
     }
 
     @Override
-    public void showUrl(String sub) {
-
+    public void showUrl(String url, String title) {
+        swipeRefreshLayout.setRefreshing(false);
+        this.url = url;
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                titletoolbar.setText("serviciosIT.eu | "+sub);
+                webView.loadUrl(url);
+                titletoolbar.setText("serviciosIT.eu | "+ title);
             }
         });
-        passPopup.dismiss();
+    }
+
+    @Override
+    public void showToast(String message) {
+        showPopup();
+        swipeRefreshLayout.setRefreshing(false);
+        runOnUiThread(new Runnable() {
+            public void run() {
+                Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

@@ -8,14 +8,15 @@ public interface MainInterface {
 
     interface MainPresenter{
         void password(String s);
-        void returnUrl(String sub);
+        void returnUrl(String url, String sub);
+        void sinRegistro(String message);
     }
-
 
     interface MainView{
 
         void emptyPass();
-        void showUrl(String sub);
+        void showUrl(String url, String title);
+        void showToast(String message);
     }
 
 }

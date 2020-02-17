@@ -55,11 +55,14 @@ public class MainModel implements MainInterface.MainModel {
             public void onResponse(Call call, Response response) throws IOException {
 
                 String mMessage = response.body().string();
-                String url = StringUtils.substringBefore(mMessage, "<");
-                String sub = StringUtils.substringBetween(mMessage,">","<" );
-                String title = StringUtils.substringAfterLast(mMessage, ">");
-                mPresenter.returnUrl(title);
-                Log.i("String",""+mMessage);
+                if(!mMessage.equals("NO REGISTRO")){
+                 String base = StringUtils.substringBefore(mMessage, "<");
+                 String url = StringUtils.substringBetween(mMessage,">","<" );
+                 String title = StringUtils.substringAfterLast(mMessage, ">");
+                 mPresenter.returnUrl(base+url, title);
+                }else{
+                    mPresenter.sinRegistro("SIN REGISTRO");
+                }
             }
         });
     }

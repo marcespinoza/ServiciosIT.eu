@@ -32,9 +32,8 @@ public class PassPopup extends DialogFragment {
     private  DialogCallback dialogCallback;
 
     public interface DialogCallback{
-
         void clickedAccept(String pass);
-
+        void clickedCancel();
     }
 
     @Nullable
@@ -69,8 +68,7 @@ public class PassPopup extends DialogFragment {
 
     @OnClick(R.id.cancelar)
     void cancelarCallback(){
-        dismiss();
-
+        dialogCallback.clickedCancel();
     }
 
     @Override

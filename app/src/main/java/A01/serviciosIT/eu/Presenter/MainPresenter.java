@@ -24,7 +24,12 @@ public class MainPresenter implements MainInterface.MainPresenter {
     }
 
     @Override
-    public void returnUrl(String sub) {
-        mView.showUrl(sub);
+    public void returnUrl(String url, String title) {
+        mView.showUrl(url, title);
+    }
+
+    @Override
+    public void sinRegistro(String message) {
+        mView.showToast(message);
     }
 }
