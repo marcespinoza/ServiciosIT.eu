@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -36,21 +37,37 @@ public class MainActivity extends AppCompatActivity implements MainInterface.Mai
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        webView.setWebViewClient(new WebViewClient());
+        webView.setWebViewClient(new WebViewClient(){
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+                swipeRefreshLayout.setRefreshing(true);
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 webView.loadUrl(url);
-
             }
         });
         materialToolbar = findViewById(R.id.toolbar);
         titletoolbar = (TextView) materialToolbar.findViewById(R.id.toolbar_title);
         mPresenter = new MainPresenter(this);
-        showPopup();
+        checkUrl();
     }
 
-    void showPopup(){
+    void checkUrl(){
+        mPresenter.getSharedP();
+    }
+
+    @Override
+    public void showPopup(){
         FragmentManager fm = getSupportFragmentManager();
         passPopup = PassPopup.newInstance("Contrasenia");
         passPopup.show(fm, "pass");
@@ -58,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements MainInterface.Mai
 
     @Override
     public void clickedAccept(String s) {
-        passPopup.dismiss();
+        passPopup.delete();
         swipeRefreshLayout.post(new Runnable()
         {
             @Override
@@ -101,5 +118,12 @@ public class MainActivity extends AppCompatActivity implements MainInterface.Mai
                 Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    @Override
+    public void showPage(String url, String title) {
+        webView.loadUrl(url);
+        titletoolbar.setText("serviciosIT.eu | "+ title);
+
     }
 }

@@ -1,11 +1,14 @@
 package A01.serviciosIT.eu.Model;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 
+import A01.serviciosIT.eu.Aplicattion.GlobalApplication;
 import A01.serviciosIT.eu.Interface.MainInterface;
 import A01.serviciosIT.eu.Presenter.MainPresenter;
 import okhttp3.Call;
@@ -19,14 +22,24 @@ import okhttp3.Response;
 public class MainModel implements MainInterface.MainModel {
 
     public MainInterface.MainPresenter mPresenter;
+    SharedPreferences preferences;
 
     public MainModel(MainPresenter mPresenter) {
         this.mPresenter = mPresenter;
+        preferences = GlobalApplication.getContext().getSharedPreferences("serviciosit", Context.MODE_PRIVATE);
+
     }
 
     @Override
     public void sendPassword(String code) {
         postCode(code);
+    }
+
+    @Override
+    public void getUrl() {
+       String url = preferences.getString("url","");
+       String title = preferences.getString("title","");
+       mPresenter.url(url, title);
     }
 
     public void postCode(String code) {
@@ -48,7 +61,7 @@ public class MainModel implements MainInterface.MainModel {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                String mMessage = e.getMessage().toString();
+                mPresenter.sinRegistro("Error. Intente nuevamente");
             }
 
             @Override
@@ -59,7 +72,11 @@ public class MainModel implements MainInterface.MainModel {
                  String base = StringUtils.substringBefore(mMessage, "<");
                  String url = StringUtils.substringBetween(mMessage,">","<" );
                  String title = StringUtils.substringAfterLast(mMessage, ">");
-                 mPresenter.returnUrl(base+url, title);
+                 SharedPreferences.Editor editor = preferences.edit();
+                 editor.putString("url",base+url);
+                 editor.putString("title",title);
+                 editor.commit();
+                    mPresenter.returnUrl(base+url, title);
                 }else{
                     mPresenter.sinRegistro("SIN REGISTRO");
                 }

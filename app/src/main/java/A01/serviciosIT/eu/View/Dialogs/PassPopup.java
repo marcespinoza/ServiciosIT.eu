@@ -81,4 +81,18 @@ public class PassPopup extends DialogFragment {
         }
     }
 
+    public void delete(){
+        dismiss();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        dismissAllowingStateLoss();
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
 }

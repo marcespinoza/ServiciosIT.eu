@@ -32,4 +32,18 @@ public class MainPresenter implements MainInterface.MainPresenter {
     public void sinRegistro(String message) {
         mView.showToast(message);
     }
+
+    @Override
+    public void getSharedP() {
+        mModel.getUrl();
+    }
+
+    @Override
+    public void url(String url, String title) {
+        if(url.isEmpty()){
+            mView.showPopup();
+        }else{
+            mView.showPage(url, title);
+        }
+    }
 }
